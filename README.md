@@ -5,8 +5,8 @@ git clone git-url
 cd yourproject
 pyenv install $(cat .python-version)
 pyenv local $(cat .python-version)
-poetry install
 poetry shell (!!!! Обязательно после версии poetry 2.0 необходимо установить poetry self add poetry-plugin-shell)
+poetry install
 ```
 
 ### Локально через Docker
