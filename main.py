@@ -1,16 +1,34 @@
-# This is a sample Python script.
+import os
 
-# Press ⌃R to execute it or replace it with your code.
-# Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
+import click
+import uvicorn
 
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press ⌘F8 to toggle the breakpoint.
+from core.config import config
 
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+@click.command()
+@click.option(
+    "--env",
+    type=click.Choice(["local", "dev", "prod"], case_sensitive=False),
+    default="local",
+)
+@click.option(
+    "--debug",
+    type=click.BOOL,
+    is_flag=True,
+    default=False,
+)
+def main(env: str, debug: bool):
+    os.environ["ENV"] = env
+    os.environ["DEBUG"] = str(debug)
+    uvicorn.run(
+        app="app.server:app",
+        host=config.APP_HOST,
+        port=config.APP_PORT,
+        reload=True if config.ENV != "production" else False,
+        workers=1,
+    )
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+
+if __name__ == "__main__":
+    main()

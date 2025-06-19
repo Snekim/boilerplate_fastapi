@@ -18,7 +18,11 @@ poetry install
 ### Запуск конкретного теста
 ```poetry run pytest tests/test_main.py::test_read_root -v```
 ### Запуск тестов с покрытием
-```poetry run pytest --cov=app --cov-report=html```
+```
+make cov
+или
+poetry run pytest --cov=app --cov-report=html
+```
 ## 🔍 Линтеры и форматирование
 Проект использует ruff
 ### Проверка кода
@@ -29,3 +33,7 @@ poetry install
 ```poetry run ruff format .```
 ### Проверка типов
 ```poetry run mypy .```
+
+### Создание миграции
+alembic revision --autogenerate -m "Create User Table"
+

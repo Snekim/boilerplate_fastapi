@@ -1,0 +1,29 @@
+version: "3.8"
+services:
+#  backend:
+#    backend settings
+  mailhog: # локальный почтовый сервис
+    image: mailhog/mailhog:latest
+    restart: always
+    ports:
+      - 1025:1025
+      - 8025:8025
+
+  redis:
+    image: "redis:latest"
+
+  database:
+    image: postgres
+    container_name: local_hrm_postgres
+    environment:
+      POSTGRES_USER: local_user
+      POSTGRES_PASSWORD: "123"
+      POSTGRES_DB: local_hrm
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
