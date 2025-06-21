@@ -51,9 +51,11 @@ class RedisSettings(BaseSettings):
 
 class AppSettings(BaseSettings):
     env: Environment = "local"
-    secret_key: SecretStr
+    # secret_key: SecretStr
+    app_host: str = '0.0.0.0'
+    app_port: int = 8000
     templates_dir: str = "templates"
-    frontend_url: str
+    # frontend_url: str
     access_token_expire: int = 3600
     log_level: str = "INFO"
 
@@ -62,9 +64,9 @@ class AppSettings(BaseSettings):
 
 class Settings:
     def __init__(self):
-        self.db = DBSettings()
-        self.redis = RedisSettings()
-        self.email = EmailSettings()
+        # self.db = DBSettings()
+        # self.redis = RedisSettings()
+        # self.email = EmailSettings()
         self.app = AppSettings()
 
 
