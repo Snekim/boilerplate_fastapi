@@ -1,12 +1,4 @@
-from fastapi import Depends, FastAPI, Request
-from fastapi.middleware import Middleware
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
-
-from app.auth.adapter.input.api import router as auth_router
-from app.container import Container
-from app.user.adapter.input.api import router as user_router
-from core.config import config
+from core.config.settings import settings
 from core.exceptions.base import CustomException
 from core.fastapi.dependencies import Logging
 from core.fastapi.middlewares import (
@@ -16,6 +8,14 @@ from core.fastapi.middlewares import (
     SQLAlchemyMiddleware,
 )
 from core.helpers.cache import Cache, CustomKeyMaker, RedisBackend
+from fastapi import Depends, FastAPI, Request
+from fastapi.middleware import Middleware
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+
+from app.auth.adapter.input.api import router as auth_router
+from app.container import Container
+from app.user.adapter.input.api import router as user_router
 
 
 def init_routers(app_: FastAPI) -> None:
@@ -78,8 +78,8 @@ def create_app() -> FastAPI:
         title="Hide",
         description="Hide API",
         version="1.0.0",
-        docs_url=None if config.ENV == "production" else "/docs",
-        redoc_url=None if config.ENV == "production" else "/redoc",
+        docs_url=None if settings.app.env == "production" else "/docs",
+        redoc_url=None if settings.app.env == "production" else "/redoc",
         dependencies=[Depends(Logging)],
         middleware=make_middleware(),
     )
