@@ -1,29 +1,18 @@
 from core.config.settings import settings
 from core.exceptions.base import CustomException
 from core.fastapi.dependencies.logging import Logging
-# from core.fastapi.middlewares import (
-#     AuthBackend,
-#     AuthenticationMiddleware,
-#     ResponseLogMiddleware,
-#     SQLAlchemyMiddleware,
-# )
+from core.fastapi.middlewares.response_log import ResponseLogMiddleware
 # from core.helpers.cache import Cache, CustomKeyMaker, RedisBackend
 from fastapi import Depends, FastAPI, Request
-# from fastapi.middleware import Middleware
-# from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware import Middleware
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-# from app.auth.adapter.input.api import router as auth_router
-# from app.container import Container
-# from app.user.adapter.input.api import router as user_router
+from app.service_name.adapter.input.api.v1.service_name_routers import service_name_router
 
 
-# def init_routers(app_: FastAPI) -> None:
-#     container = Container()
-#     user_router.container = container
-#     auth_router.container = container
-#     app_.include_router(user_router)
-#     app_.include_router(auth_router)
+def init_routers(app_: FastAPI) -> None:
+    app_.include_router(service_name_router)
 
 
 def init_listeners(app_: FastAPI) -> None:
@@ -32,7 +21,10 @@ def init_listeners(app_: FastAPI) -> None:
     async def custom_exception_handler(request: Request, exc: CustomException):
         return JSONResponse(
             status_code=exc.code,
-            content={"error_code": exc.error_code, "message": exc.message},
+            content={
+                "error_code": exc.error_code,
+                "message": exc.message
+            },
         )
 
 
@@ -49,24 +41,24 @@ def on_auth_error(request: Request, exc: Exception):
     )
 
 
-# def make_middleware() -> list[Middleware]:
-#     middleware = [
-#         Middleware(
-#             CORSMiddleware,
-#             allow_origins=["*"],
-#             allow_credentials=True,
-#             allow_methods=["*"],
-#             allow_headers=["*"],
-#         ),
-#         Middleware(
-#             AuthenticationMiddleware,
-#             backend=AuthBackend(),
-#             on_error=on_auth_error,
-#         ),
-#         Middleware(SQLAlchemyMiddleware),
-#         Middleware(ResponseLogMiddleware),
-#     ]
-#     return middleware
+def make_middleware() -> list[Middleware]:
+    middleware = [
+        Middleware(
+            CORSMiddleware,
+            allow_origins=["*"],
+            allow_credentials=True,
+            allow_methods=["*"],
+            allow_headers=["*"],
+        ),
+        # Middleware(
+        #     AuthenticationMiddleware,
+        #     backend=AuthBackend(),
+        #     on_error=on_auth_error,
+        # ),
+        # Middleware(SQLAlchemyMiddleware),
+        Middleware(ResponseLogMiddleware),
+    ]
+    return middleware
 
 
 # def init_cache() -> None:
@@ -81,10 +73,10 @@ def create_app() -> FastAPI:
         docs_url=None if settings.app.env == "production" else "/docs",
         redoc_url=None if settings.app.env == "production" else "/redoc",
         dependencies=[Depends(Logging)],
-        # middleware=make_middleware(),
+        middleware=make_middleware(),
     )
-    # init_routers(app_=app_)
-    # init_listeners(app_=app_)
+    init_routers(app_=app_)
+    init_listeners(app_=app_)
     # init_cache()
     return app_
 
